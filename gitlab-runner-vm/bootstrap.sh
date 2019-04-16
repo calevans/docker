@@ -5,7 +5,7 @@
 # This is a bootstrap script for quickly setting up gitlab-runner
 # on virtual (or even metal) machine with Ubuntu-14.04
 #
-# gitlab-runner is configured below to run the separate 
+# gitlab-runner is configured below to run the separate
 # docker container (runner) for each version of php
 #
 # TODO:
@@ -104,7 +104,7 @@ do_install() {
     fi
 
     gitlab-ci-multi-runner register -n -r "$CI_TOKEN" -u "$CI_URL" --tag-list 'php,mysql' --executor docker \
-        --docker-image "tetraweb/php:latest" --docker-allowed-images "tetraweb/php:*" \
+        --docker-image "calevans/php:latest" --docker-allowed-images "calevans/php:*" \
         --docker-allowed-services "*" --docker-allowed-services "*/*" $(printf " --env %s" "${ENVVARS[@]}")
 
     sed -i -- "s/concurrent = 1/concurrent = $CONCURRENT/g" /etc/gitlab-runner/config.toml
