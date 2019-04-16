@@ -1,4 +1,4 @@
-FROM php:7.1
+FROM php:7.2
 
 ENV XDEBUG_VERSION 2.7.1
 
@@ -21,7 +21,6 @@ RUN additionalPackages=" \
         libjpeg62-turbo-dev \
         libkrb5-dev \
         libldap2-dev \
-        libmcrypt-dev \
         libpng-dev \
         libpq-dev \
         libpspell-dev \
@@ -40,7 +39,6 @@ RUN additionalPackages=" \
         libenchant1c2a \
         libfreetype6 \
         libjpeg62-turbo \
-        libmcrypt4 \
         libpq5 \
         libsybdb5 \
         libtidy-dev \
@@ -64,7 +62,6 @@ RUN additionalPackages=" \
         intl \
         ldap \
         mbstring \
-        mcrypt \
         mysqli \
         opcache \
         pcntl \

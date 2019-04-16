@@ -1,6 +1,6 @@
-FROM php:7.1
+FROM php:7.1-fpm
 
-ENV XDEBUG_VERSION 2.7.1
+ENV XDEBUG_VERSION 2.6.0
 
 RUN additionalPackages=" \
         apt-transport-https \
@@ -8,8 +8,6 @@ RUN additionalPackages=" \
         msmtp-mta \
         openssh-client \
         rsync \
-        gnupg2 \
-        unzip \
     " \
     buildDeps=" \
         freetds-dev \
@@ -18,11 +16,12 @@ RUN additionalPackages=" \
         libenchant-dev \
         libfreetype6-dev \
         libgmp3-dev \
+        libicu-dev \
         libjpeg62-turbo-dev \
         libkrb5-dev \
         libldap2-dev \
         libmcrypt-dev \
-        libpng-dev \
+        libpng12-dev \
         libpq-dev \
         libpspell-dev \
         librabbitmq-dev \
@@ -39,11 +38,13 @@ RUN additionalPackages=" \
         libc-client2007e \
         libenchant1c2a \
         libfreetype6 \
+        libicu52 \
         libjpeg62-turbo \
         libmcrypt4 \
+        libpng12-0 \
         libpq5 \
         libsybdb5 \
-        libtidy-dev \
+        libtidy-0.99-0 \
         libx11-6 \
         libxpm4 \
         libxslt1.1 \
@@ -90,7 +91,6 @@ RUN additionalPackages=" \
     " \
     && echo "deb http://httpredir.debian.org/debian jessie contrib non-free" > /etc/apt/sources.list.d/additional.list \
     && apt-get update \
-    && apt-get install -y --no-install-recommends apt-utils \
     && apt-get install -y --no-install-recommends $additionalPackages $buildDeps $runDeps \
     && docker-php-source extract \
     && cd /usr/src/php/ext/ \
@@ -122,6 +122,22 @@ RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/ \
     && ln -s /usr/local/bin/composer.phar /usr/local/bin/composer
 
+# Install phpunit and put binary into $PATH
+RUN curl -sSLo phpunit.phar https://phar.phpunit.de/phpunit.phar \
+    && chmod 755 phpunit.phar \
+    && mv phpunit.phar /usr/local/bin/ \
+    && ln -s /usr/local/bin/phpunit.phar /usr/local/bin/phpunit
+
+# Install PHP Code sniffer
+RUN curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar \
+    && chmod 755 phpcs.phar \
+    && mv phpcs.phar /usr/local/bin/ \
+    && ln -s /usr/local/bin/phpcs.phar /usr/local/bin/phpcs \
+    && curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar \
+    && chmod 755 phpcbf.phar \
+    && mv phpcbf.phar /usr/local/bin/ \
+    && ln -s /usr/local/bin/phpcbf.phar /usr/local/bin/phpcbf
+
 # Install Node.js & Yarn
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
     && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
@@ -130,6 +146,3 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY msmtprc /etc/
-COPY entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php", "-a"]

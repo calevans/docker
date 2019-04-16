@@ -1,4 +1,4 @@
-FROM php:7.1
+FROM php:7.3
 
 ENV XDEBUG_VERSION 2.7.1
 
@@ -10,6 +10,7 @@ RUN additionalPackages=" \
         rsync \
         gnupg2 \
         unzip \
+        zip \
     " \
     buildDeps=" \
         freetds-dev \
@@ -21,7 +22,6 @@ RUN additionalPackages=" \
         libjpeg62-turbo-dev \
         libkrb5-dev \
         libldap2-dev \
-        libmcrypt-dev \
         libpng-dev \
         libpq-dev \
         libpspell-dev \
@@ -33,14 +33,12 @@ RUN additionalPackages=" \
         libxml2-dev \
         libxpm-dev \
         libxslt1-dev \
-        zlib1g-dev \
     " \
     && runDeps=" \
         libc-client2007e \
         libenchant1c2a \
         libfreetype6 \
         libjpeg62-turbo \
-        libmcrypt4 \
         libpq5 \
         libsybdb5 \
         libtidy-dev \
@@ -64,7 +62,6 @@ RUN additionalPackages=" \
         intl \
         ldap \
         mbstring \
-        mcrypt \
         mysqli \
         opcache \
         pcntl \
@@ -85,7 +82,6 @@ RUN additionalPackages=" \
         wddx \
         xmlrpc \
         xsl \
-        zip \
         xdebug \
     " \
     && echo "deb http://httpredir.debian.org/debian jessie contrib non-free" > /etc/apt/sources.list.d/additional.list \
@@ -114,6 +110,8 @@ RUN additionalPackages=" \
            rm -f /usr/local/etc/php/conf.d/docker-php-ext-$ext.ini; \
        done \
     && docker-php-source delete \
+    && apt-get install -y libzip-dev zlib1g-dev \
+    && docker-php-ext-install zip \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $buildDeps \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
